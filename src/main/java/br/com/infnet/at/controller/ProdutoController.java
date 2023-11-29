@@ -2,7 +2,7 @@ package br.com.infnet.at.controller;
 
 import br.com.infnet.at.exception.ProdutoConflict;
 import br.com.infnet.at.exception.ProdutoNotFound;
-import br.com.infnet.at.model.Roupa;
+import br.com.infnet.at.model.Produto;
 import br.com.infnet.at.service.ProdutoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class ProdutoController {
     @GetMapping("/{id}")
     public ResponseEntity<String> getById(@PathVariable int id) {
         try {
-            Roupa produto = produtoService.getById(id);
+            Produto produto = produtoService.getById(id);
             LOGGER.info(produto.toString());
             return ResponseEntity.ok(produto.toString());
         } catch (ProdutoNotFound ex) {
@@ -35,7 +35,7 @@ public class ProdutoController {
     @GetMapping
     public ResponseEntity<String> getAll() {
         try {
-            List<Roupa> produtos = produtoService.getAll();
+            List<Produto> produtos = produtoService.getAll();
             LOGGER.info(produtos.toString());
             return ResponseEntity.ok(produtos.toString());
         } catch (ProdutoNotFound ex) {
@@ -48,7 +48,7 @@ public class ProdutoController {
     public ResponseEntity<String> getFiltered(@RequestParam(required = false) Double preco,
                                                    @RequestParam(required = false) String tamanho) {
         try {
-            List<Roupa> produtosFiltrados = produtoService.filter(preco, tamanho);
+            List<Produto> produtosFiltrados = produtoService.filter(preco, tamanho);
             LOGGER.info(produtosFiltrados.toString());
             return ResponseEntity.ok(produtosFiltrados.toString());
         } catch (ProdutoNotFound ex) {
@@ -60,7 +60,7 @@ public class ProdutoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable int id) {
         try {
-            Roupa produto = produtoService.getById(id);
+            Produto produto = produtoService.getById(id);
             produtoService.deleteById(id);
             LOGGER.info(produto.toString());
             return ResponseEntity.ok(produto.toString());
@@ -71,7 +71,7 @@ public class ProdutoController {
     }
 
     @PostMapping()
-    public ResponseEntity<String> add(@RequestBody Roupa produto) {
+    public ResponseEntity<String> add(@RequestBody Produto produto) {
         try {
             produtoService.add(produto);
             LOGGER.info(produto.toString());
@@ -83,9 +83,9 @@ public class ProdutoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable int id, @RequestBody Roupa produto) {
+    public ResponseEntity<String> update(@PathVariable int id, @RequestBody Produto produto) {
         try {
-            Roupa produtoAtualizado = produtoService.update(id, produto);
+            Produto produtoAtualizado = produtoService.update(id, produto);
             LOGGER.info(produtoAtualizado.toString());
             return ResponseEntity.ok(produtoAtualizado.toString());
         } catch (ProdutoNotFound ex) {

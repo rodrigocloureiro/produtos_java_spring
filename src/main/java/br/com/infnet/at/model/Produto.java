@@ -8,7 +8,7 @@ import java.util.ArrayList;
 @ToString
 @Getter
 @Setter
-public class Roupa {
+public class Produto {
     private int id;
     private String nome;
     private double preco;

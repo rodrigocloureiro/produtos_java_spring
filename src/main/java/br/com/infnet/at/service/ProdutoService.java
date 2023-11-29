@@ -2,23 +2,20 @@ package br.com.infnet.at.service;
 
 import br.com.infnet.at.exception.ProdutoConflict;
 import br.com.infnet.at.exception.ProdutoNotFound;
-import br.com.infnet.at.model.Roupa;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import br.com.infnet.at.model.Produto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProdutoService {
-    private HashMap<Integer, Roupa> produtos = populaProdutos();
+    private HashMap<Integer, Produto> produtos = populaProdutos();
     private int lastId = produtos.size();
 
-    private HashMap<Integer, Roupa> populaProdutos() {
-        HashMap<Integer, Roupa> produtos = new HashMap<>();
+    private HashMap<Integer, Produto> populaProdutos() {
+        HashMap<Integer, Produto> produtos = new HashMap<>();
 
         ArrayList<String> tamanhosCamisa = new ArrayList<>();
         tamanhosCamisa.add("P");
@@ -33,9 +30,9 @@ public class ProdutoService {
         tamanhosCalca.add("G");
 
 
-        Roupa camisa = new Roupa(1, "Camisa Regata Verão", 75.90, tamanhosCamisa);
-        Roupa camiseta = new Roupa(2, "Camiseta Lisa", 50.0, tamanhosCamiseta);
-        Roupa calca = new Roupa(3, "Calça Jeans", 100.0, tamanhosCalca);
+        Produto camisa = new Produto(1, "Camisa Regata Verão", 75.90, tamanhosCamisa);
+        Produto camiseta = new Produto(2, "Camiseta Lisa", 50.0, tamanhosCamiseta);
+        Produto calca = new Produto(3, "Calça Jeans", 100.0, tamanhosCalca);
 
         produtos.put(camisa.getId(), camisa);
         produtos.put(camiseta.getId(), camiseta);
@@ -44,25 +41,25 @@ public class ProdutoService {
         return produtos;
     }
 
-    public Roupa getById(int id) {
-        Roupa produto = produtos.get(id);
+    public Produto getById(int id) {
+        Produto produto = produtos.get(id);
         if (produto == null) throw new ProdutoNotFound("Produto não encontrado!");
         return produto;
     }
 
-    public List<Roupa> getAll() {
+    public List<Produto> getAll() {
         if (produtos.isEmpty()) throw new ProdutoNotFound("Produto não encontrado!");
         return produtos.values().stream().toList();
     }
 
     public void deleteById(int id) {
-        Roupa produto = getById(id);
+        Produto produto = getById(id);
         if (produto == null) throw new ProdutoNotFound("Produto não encontrado!");
         produtos.remove(id);
     }
 
-    public List<Roupa> add(Roupa produto) {
-        /*for (Roupa item : produtos.values()) {
+    public List<Produto> add(Produto produto) {
+        /*for (Produto item : produtos.values()) {
             if (item.getNome().equals(produto.getNome())
                     && item.getPreco() == produto.getPreco()
                     && item.getTamanhos().equals(produto.getTamanhos())) {
@@ -75,16 +72,16 @@ public class ProdutoService {
         return produtos.values().stream().toList();
     }
 
-    public Roupa update(int id, Roupa produtoAtualizado) {
-        Roupa produto = getById(id);
+    public Produto update(int id, Produto produtoAtualizado) {
+        Produto produto = getById(id);
         if (produto == null) throw new ProdutoNotFound("Produto não encontrado!");
         produtoAtualizado.setId(id);
         produtos.replace(id, produtoAtualizado);
         return produtoAtualizado;
     }
 
-    public List<Roupa> filter(Double preco, String tamanho) {
-        List<Roupa> produtos = getAll();
+    public List<Produto> filter(Double preco, String tamanho) {
+        List<Produto> produtos = getAll();
 
         if (preco != null) {
             produtos = produtos.stream()
