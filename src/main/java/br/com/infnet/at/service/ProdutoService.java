@@ -2,15 +2,32 @@ package br.com.infnet.at.service;
 
 import br.com.infnet.at.exception.ProdutoConflict;
 import br.com.infnet.at.exception.ProdutoNotFound;
+import br.com.infnet.at.model.Cotacao;
+import br.com.infnet.at.model.PayloadCotacao;
 import br.com.infnet.at.model.Produto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ProdutoService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoService.class);
     private HashMap<Integer, Produto> produtos = populaProdutos();
     private int lastId = produtos.size();
 
@@ -30,9 +47,9 @@ public class ProdutoService {
         tamanhosCalca.add("G");
 
 
-        Produto camisa = new Produto(1, "Camisa Regata Verão", 75.90, tamanhosCamisa);
-        Produto camiseta = new Produto(2, "Camiseta Lisa", 50.0, tamanhosCamiseta);
-        Produto calca = new Produto(3, "Calça Jeans", 100.0, tamanhosCalca);
+        Produto camisa = Produto.builder().id(1).nome("Camisa Regata Verão").preco(75.90).tamanhos(tamanhosCamisa).build();
+        Produto camiseta = Produto.builder().id(2).nome("Camiseta Lisa").preco(50.00).tamanhos(tamanhosCamiseta).build();
+        Produto calca = Produto.builder().id(3).nome("Calça Jeans").preco(100.00).tamanhos(tamanhosCalca).build();
 
         produtos.put(camisa.getId(), camisa);
         produtos.put(camiseta.getId(), camiseta);
@@ -98,5 +115,47 @@ public class ProdutoService {
         if (produtos.isEmpty()) throw new ProdutoNotFound("Produto não encontrado!");
 
         return produtos;
+    }
+
+    public List<Produto> dollarize() throws URISyntaxException, IOException, InterruptedException {
+        String url = "https://economia.awesomeapi.com.br/last/BRL-USD";
+        HttpResponse<String> response = response(url);
+
+        ObjectMapper objectMapper = JsonMapper.builder().build();
+        PayloadCotacao payloadCotacao = objectMapper.readValue(response.body(), PayloadCotacao.class);
+        Cotacao cotacao = payloadCotacao.getCotacao();
+
+        List<Produto> produtos = getAll();
+
+        LOGGER.info(String.valueOf(response.statusCode()));
+
+        for (Produto prod : produtos) {
+            prod.setPrecoDolar(formatTwoDecimal(prod.getPreco(), cotacao.getAsk()));
+        }
+
+        return produtos;
+    }
+
+    private double formatTwoDecimal(double valor, double moeda) {
+        DecimalFormatSymbols dfSymbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("0.00", dfSymbols);
+        df.setRoundingMode(RoundingMode.DOWN);
+
+        return Double.parseDouble(df.format(valor * moeda));
+    }
+
+    private HttpResponse<String> response(String url) throws URISyntaxException, IOException, InterruptedException {
+        return client().send(request(url), HttpResponse.BodyHandlers.ofString());
+    }
+
+    private HttpClient client() {
+        return HttpClient.newBuilder().build();
+    }
+
+    private HttpRequest request(String url) throws URISyntaxException {
+        return HttpRequest.newBuilder()
+                .version(HttpClient.Version.HTTP_2)
+                .uri(new URI(url))
+                .build();
     }
 }

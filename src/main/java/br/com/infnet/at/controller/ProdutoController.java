@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -46,7 +48,7 @@ public class ProdutoController {
 
     @GetMapping("/filtro")
     public ResponseEntity<String> getFiltered(@RequestParam(required = false) Double preco,
-                                                   @RequestParam(required = false) String tamanho) {
+                                              @RequestParam(required = false) String tamanho) {
         try {
             List<Produto> produtosFiltrados = produtoService.filter(preco, tamanho);
             LOGGER.info(produtosFiltrados.toString());
@@ -91,6 +93,17 @@ public class ProdutoController {
         } catch (ProdutoNotFound ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/dolar")
+    public ResponseEntity<String> getAllDollarized() {
+        try {
+            return ResponseEntity.ok(produtoService.dollarize().toString());
+        } catch (ProdutoNotFound ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
