@@ -48,33 +48,9 @@ public class ProdutoController {
     public ResponseEntity<String> getFiltered(@RequestParam(required = false) Double preco,
                                                    @RequestParam(required = false) String tamanho) {
         try {
-            List<Roupa> produtos = produtoService.getAll().stream().toList();
-
-            if (preco != null && tamanho != null) {
-                List<Roupa> produtosFiltrados = produtos.stream()
-                        .filter(produto ->
-                                produto.getPreco() <= preco && produto.getTamanhos().contains(tamanho))
-                        .toList();
-                LOGGER.info(produtosFiltrados.toString());
-                return ResponseEntity.ok(produtosFiltrados.toString());
-            } else if (preco != null) {
-                List<Roupa> produtosFiltrados = produtos.stream()
-                        .filter(produto ->
-                                produto.getPreco() <= preco)
-                        .toList();
-                LOGGER.info(produtosFiltrados.toString());
-                return ResponseEntity.ok(produtosFiltrados.toString());
-            } else if (tamanho != null) {
-                List<Roupa> produtosFiltrados = produtos.stream()
-                        .filter(produto ->
-                                produto.getTamanhos().contains(tamanho))
-                        .toList();
-                LOGGER.info(produtosFiltrados.toString());
-                return ResponseEntity.ok(produtosFiltrados.toString());
-            }
-
-            LOGGER.info(produtos.toString());
-            return ResponseEntity.ok(produtos.toString());
+            List<Roupa> produtosFiltrados = produtoService.filter(preco, tamanho);
+            LOGGER.info(produtosFiltrados.toString());
+            return ResponseEntity.ok(produtosFiltrados.toString());
         } catch (ProdutoNotFound ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());

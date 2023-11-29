@@ -3,11 +3,14 @@ package br.com.infnet.at.service;
 import br.com.infnet.at.exception.ProdutoConflict;
 import br.com.infnet.at.exception.ProdutoNotFound;
 import br.com.infnet.at.model.Roupa;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -78,5 +81,25 @@ public class ProdutoService {
         produtoAtualizado.setId(id);
         produtos.replace(id, produtoAtualizado);
         return produtoAtualizado;
+    }
+
+    public List<Roupa> filter(Double preco, String tamanho) {
+        List<Roupa> produtos = getAll();
+
+        if (preco != null) {
+            produtos = produtos.stream()
+                    .filter(produto -> produto.getPreco() <= preco)
+                    .toList();
+        }
+
+        if (tamanho != null) {
+            produtos = produtos.stream()
+                    .filter(produto -> produto.getTamanhos().contains(tamanho))
+                    .toList();
+        }
+
+        if (produtos.isEmpty()) throw new ProdutoNotFound("Produto não encontrado!");
+
+        return produtos;
     }
 }
