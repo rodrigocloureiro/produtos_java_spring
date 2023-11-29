@@ -104,6 +104,8 @@ public class ProdutoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 }

@@ -120,14 +120,15 @@ public class ProdutoService {
     public List<Produto> dollarize() throws URISyntaxException, IOException, InterruptedException {
         String url = "https://economia.awesomeapi.com.br/last/BRL-USD";
         HttpResponse<String> response = response(url);
+        LOGGER.info("Status Code: " + response.statusCode());
+
+        if (response.statusCode() >= 400 && response.statusCode() < 500) throw new RuntimeException("Erro ao efetuar requisição!");
 
         ObjectMapper objectMapper = JsonMapper.builder().build();
         PayloadCotacao payloadCotacao = objectMapper.readValue(response.body(), PayloadCotacao.class);
         Cotacao cotacao = payloadCotacao.getCotacao();
 
         List<Produto> produtos = getAll();
-
-        LOGGER.info(String.valueOf(response.statusCode()));
 
         for (Produto prod : produtos) {
             prod.setPrecoDolar(formatTwoDecimal(prod.getPreco(), cotacao.getAsk()));
