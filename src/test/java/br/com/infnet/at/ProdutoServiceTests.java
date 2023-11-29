@@ -1,6 +1,7 @@
 package br.com.infnet.at;
 
 import br.com.infnet.at.exception.ProdutoNotFound;
+import br.com.infnet.at.model.Cotacao;
 import br.com.infnet.at.model.Produto;
 import br.com.infnet.at.service.ProdutoService;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -119,5 +122,22 @@ public class ProdutoServiceTests {
         LOGGER.info(produtoService.getAll().toString());
 
         assertEquals("Bola Esportiva", produtoService.getById(4).getNome());
+    }
+
+    @Test
+    @DisplayName("Deve retornar o valor do produto em dólar (USD)")
+    public void testDollarize() {
+        Produto produto = produtoService.getById(1);
+        LOGGER.info(String.valueOf(produto.getPrecoDolar()));
+        assertEquals(0.0, produto.getPrecoDolar());
+
+        try {
+            produto = produtoService.dollarize().get(1);
+            LOGGER.info(String.valueOf(produto.getPrecoDolar()));
+            assertTrue(produto.getPrecoDolar() > 0.0);
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
