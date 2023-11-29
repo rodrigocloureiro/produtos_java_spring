@@ -66,8 +66,8 @@ public class ProdutoService {
                 throw new ProdutoConflict("Produto já existe na base de dados!");
             }
         }*/
-        // produto.setId(++this.lastId);
         if (produtos.containsKey(produto.getId())) throw new ProdutoConflict("Produto já existe na base de dados!");
+        produto.setId(++this.lastId);
         produtos.put(produto.getId(), produto);
         return produtos.values().stream().toList();
     }
