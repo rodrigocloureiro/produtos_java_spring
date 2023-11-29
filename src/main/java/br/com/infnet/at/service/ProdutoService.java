@@ -48,6 +48,7 @@ public class ProdutoService {
     }
 
     public List<Roupa> getAll() {
+        if (produtos.isEmpty()) throw new ProdutoNotFound("Produto não encontrado!");
         return produtos.values().stream().toList();
     }
 

@@ -28,37 +28,45 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Roupa>> getAll() {
-        List<Roupa> produtos = produtoService.getAll();
-        return ResponseEntity.ok(produtos);
+    public ResponseEntity<String> getAll() {
+        try {
+            List<Roupa> produtos = produtoService.getAll();
+            return ResponseEntity.ok(produtos.toString());
+        } catch (ProdutoNotFound ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
     @GetMapping("/filtro")
-    public ResponseEntity<List<Roupa>> getFiltered(@RequestParam(required = false) Double preco,
+    public ResponseEntity<String> getFiltered(@RequestParam(required = false) Double preco,
                                                    @RequestParam(required = false) String tamanho) {
-        List<Roupa> produtos = produtoService.getAll().stream().toList();
+        try {
+            List<Roupa> produtos = produtoService.getAll().stream().toList();
 
-        if (preco != null && tamanho != null) {
-            List<Roupa> produtosFiltrados = produtos.stream()
-                    .filter(produto ->
-                            produto.getPreco() <= preco && produto.getTamanhos().contains(tamanho))
-                    .toList();
-            return ResponseEntity.ok(produtosFiltrados);
-        } else if (preco != null) {
-            List<Roupa> produtosFiltrados = produtos.stream()
-                    .filter(produto ->
-                            produto.getPreco() <= preco)
-                    .toList();
-            return ResponseEntity.ok(produtosFiltrados);
-        } else if (tamanho != null) {
-            List<Roupa> produtosFiltrados = produtos.stream()
-                    .filter(produto ->
-                            produto.getTamanhos().contains(tamanho))
-                    .toList();
-            return ResponseEntity.ok(produtosFiltrados);
+            if (preco != null && tamanho != null) {
+                List<Roupa> produtosFiltrados = produtos.stream()
+                        .filter(produto ->
+                                produto.getPreco() <= preco && produto.getTamanhos().contains(tamanho))
+                        .toList();
+                return ResponseEntity.ok(produtosFiltrados.toString());
+            } else if (preco != null) {
+                List<Roupa> produtosFiltrados = produtos.stream()
+                        .filter(produto ->
+                                produto.getPreco() <= preco)
+                        .toList();
+                return ResponseEntity.ok(produtosFiltrados.toString());
+            } else if (tamanho != null) {
+                List<Roupa> produtosFiltrados = produtos.stream()
+                        .filter(produto ->
+                                produto.getTamanhos().contains(tamanho))
+                        .toList();
+                return ResponseEntity.ok(produtosFiltrados.toString());
+            }
+
+            return ResponseEntity.ok(produtos.toString());
+        } catch (ProdutoNotFound ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
-
-        return ResponseEntity.ok(produtos);
     }
 
     @DeleteMapping("/{id}")
