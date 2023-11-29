@@ -1,11 +1,9 @@
 package br.com.infnet.at;
 
 import br.com.infnet.at.exception.ProdutoNotFound;
-import br.com.infnet.at.model.Cotacao;
 import br.com.infnet.at.model.Produto;
 import br.com.infnet.at.service.ProdutoService;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ProdutoServiceTests {
     @Autowired
     ProdutoService produtoService;
@@ -63,6 +62,8 @@ public class ProdutoServiceTests {
         assertEquals(chinelo.getNome(), filtrado.get(0).getNome());
         assertEquals(chinelo.getPreco(), filtrado.get(0).getPreco());
         assertEquals(chinelo.getTamanhos(), filtrado.get(0).getTamanhos());
+
+        produtoService.deleteById(chinelo.getId());
     }
 
     @Test
@@ -76,17 +77,23 @@ public class ProdutoServiceTests {
     @Test
     @DisplayName("Deve deletar um produto pelo ID")
     public void testDeleteById() {
+        Produto produto = produtoService.getById(1);
         int produtosCount = produtoService.getAll().size();
         LOGGER.info("QTD PRODUTOS: " + produtosCount);
+
+        LOGGER.info(produtoService.getAll().toString());
 
         produtoService.deleteById(1);
         int produtoDeletadoCount = produtoService.getAll().size();
         LOGGER.info("QTD PRODUTOS APÓS REMOÇÃO: " + produtoDeletadoCount);
 
         assertEquals(2, produtoDeletadoCount);
+
+        produtoService.add(produto);
     }
 
     @Test
+    @Order(2)
     @DisplayName("Deve adicionar/inserir um produto")
     public void testAdd() {
         Produto bola = Produto.builder()
@@ -100,13 +107,16 @@ public class ProdutoServiceTests {
         int produtosCount = produtoService.getAll().size();
 
         assertEquals(4, produtosCount);
-        assertEquals(4, bola.getId());
+        assertEquals(5, bola.getId());
         assertEquals("Bola de Futebol", bola.getNome());
         assertEquals(59.90, bola.getPreco());
         assertEquals(List.of("Universal"), bola.getTamanhos());
+
+        produtoService.deleteById(5);
     }
 
     @Test
+    @Order(1)
     @DisplayName("Deve atualizar o produto")
     public void testUpdate() {
         Produto prod = Produto.builder()
@@ -122,6 +132,8 @@ public class ProdutoServiceTests {
         LOGGER.info(produtoService.getAll().toString());
 
         assertEquals("Bola Esportiva", produtoService.getById(4).getNome());
+
+        produtoService.deleteById(prod.getId());
     }
 
     @Test
