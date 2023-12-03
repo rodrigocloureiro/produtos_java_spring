@@ -138,15 +138,15 @@ public class ProdutoServiceTests {
 
     @Test
     @DisplayName("Deve retornar o valor do produto em dólar (USD)")
-    public void testDollarize() {
+    public void testCurrencyConversion() {
         Produto produto = produtoService.getById(1);
-        LOGGER.info(String.valueOf(produto.getPrecoDolar()));
-        assertEquals(0.0, produto.getPrecoDolar());
+        LOGGER.info(String.valueOf(produto.getPrecoEstrangeiro()));
+        assertEquals(0.0, produto.getPrecoEstrangeiro());
 
         try {
-            produto = produtoService.dollarize().get(1);
-            LOGGER.info(String.valueOf(produto.getPrecoDolar()));
-            assertTrue(produto.getPrecoDolar() > 0.0);
+            produto = produtoService.currencyConversion("USD").get(1);
+            LOGGER.info(String.valueOf(produto.getPrecoEstrangeiro()));
+            assertTrue(produto.getPrecoEstrangeiro() > 0.0);
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }

@@ -64,6 +64,17 @@ public class ProdutoService {
         return produto;
     }
 
+    public List<Produto> getAll(Double preco, String tamanho, String moeda) {
+        try {
+            if (preco != null && tamanho != null) return filter(preco, tamanho);
+            if (moeda != null) return currencyConversion(moeda);
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return getAll();
+    }
+
     public List<Produto> getAll() {
         if (produtos.isEmpty()) throw new ProdutoNotFound("Produto não encontrado!");
         return produtos.values().stream().toList();
@@ -117,12 +128,13 @@ public class ProdutoService {
         return produtos;
     }
 
-    public List<Produto> dollarize() throws URISyntaxException, IOException, InterruptedException {
-        String url = "https://economia.awesomeapi.com.br/last/BRL-USD";
+    public List<Produto> currencyConversion(String moeda) throws URISyntaxException, IOException, InterruptedException {
+        String url = "https://economia.awesomeapi.com.br/last/BRL-" + moeda.toUpperCase();
         HttpResponse<String> response = response(url);
         LOGGER.info("Status Code: " + response.statusCode());
 
-        if (response.statusCode() >= 400 && response.statusCode() < 500) throw new RuntimeException("Erro ao efetuar requisição!");
+        if (response.statusCode() >= 400 && response.statusCode() < 500)
+            throw new RuntimeException("Erro ao efetuar requisição!");
 
         ObjectMapper objectMapper = JsonMapper.builder().build();
         PayloadCotacao payloadCotacao = objectMapper.readValue(response.body(), PayloadCotacao.class);
@@ -131,7 +143,7 @@ public class ProdutoService {
         List<Produto> produtos = getAll();
 
         for (Produto prod : produtos) {
-            prod.setPrecoDolar(formatTwoDecimal(prod.getPreco(), cotacao.getAsk()));
+            prod.setPrecoEstrangeiro(formatTwoDecimal(prod.getPreco(), cotacao.getAsk()));
         }
 
         return produtos;

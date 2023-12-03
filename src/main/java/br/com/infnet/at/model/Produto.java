@@ -13,6 +13,6 @@ public class Produto {
     private int id;
     private String nome;
     private double preco;
-    private double precoDolar;
+    private double precoEstrangeiro;
     private ArrayList<String> tamanhos;
 }

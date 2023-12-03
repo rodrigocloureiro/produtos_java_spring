@@ -35,24 +35,13 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<String> getAll() {
+    public ResponseEntity<String> getAll(@RequestParam(required = false) Double preco,
+                                         @RequestParam(required = false) String tamanho,
+                                         @RequestParam(required = false) String moeda) {
         try {
-            List<Produto> produtos = produtoService.getAll();
+            List<Produto> produtos = produtoService.getAll(preco, tamanho, moeda);
             LOGGER.info(produtos.toString());
             return ResponseEntity.ok(produtos.toString());
-        } catch (ProdutoNotFound ex) {
-            LOGGER.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/filtro")
-    public ResponseEntity<String> getFiltered(@RequestParam(required = false) Double preco,
-                                              @RequestParam(required = false) String tamanho) {
-        try {
-            List<Produto> produtosFiltrados = produtoService.filter(preco, tamanho);
-            LOGGER.info(produtosFiltrados.toString());
-            return ResponseEntity.ok(produtosFiltrados.toString());
         } catch (ProdutoNotFound ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -93,19 +82,6 @@ public class ProdutoController {
         } catch (ProdutoNotFound ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/dolar")
-    public ResponseEntity<String> getAllDollarized() {
-        try {
-            return ResponseEntity.ok(produtoService.dollarize().toString());
-        } catch (ProdutoNotFound ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        } catch (URISyntaxException | IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 }
