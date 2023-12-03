@@ -3,7 +3,7 @@ package br.com.infnet.at.service;
 import br.com.infnet.at.exception.ProdutoConflictException;
 import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Cotacao;
-import br.com.infnet.at.model.PayloadCotacao;
+import br.com.infnet.at.model.CotacaoPayload;
 import br.com.infnet.at.model.Produto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -137,8 +137,8 @@ public class ProdutoService {
             throw new RuntimeException("Erro ao efetuar requisição!");
 
         ObjectMapper objectMapper = JsonMapper.builder().build();
-        PayloadCotacao payloadCotacao = objectMapper.readValue(response.body(), PayloadCotacao.class);
-        Cotacao cotacao = payloadCotacao.getCotacao();
+        CotacaoPayload cotacaoPayload = objectMapper.readValue(response.body(), CotacaoPayload.class);
+        Cotacao cotacao = cotacaoPayload.getCotacao();
 
         List<Produto> produtos = getAll();
 
