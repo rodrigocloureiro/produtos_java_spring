@@ -3,6 +3,7 @@ package br.com.infnet.at.controller;
 import br.com.infnet.at.exception.ProdutoConflictException;
 import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Produto;
+import br.com.infnet.at.model.ResponsePayload;
 import br.com.infnet.at.service.ProdutoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,65 +22,65 @@ public class ProdutoController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProdutoController.class);
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getById(@PathVariable int id) {
+    public ResponseEntity<ResponsePayload> getById(@PathVariable int id) {
         try {
             Produto produto = produtoService.getById(id);
             LOGGER.info(produto.toString());
-            return ResponseEntity.ok(produto.toString());
+            return ResponseEntity.ok(new ResponsePayload(HttpStatus.OK.toString(), List.of(produto)));
         } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsePayload(ex.getMessage()));
         }
     }
 
     @GetMapping
-    public ResponseEntity<String> getAll(@RequestParam(required = false) Double preco,
-                                         @RequestParam(required = false) String tamanho,
-                                         @RequestParam(required = false) String moeda) {
+    public ResponseEntity<ResponsePayload> getAll(@RequestParam(required = false) Double preco,
+                                                  @RequestParam(required = false) String tamanho,
+                                                  @RequestParam(required = false) String moeda) {
         try {
             List<Produto> produtos = produtoService.getAll(preco, tamanho, moeda);
             LOGGER.info(produtos.toString());
-            return ResponseEntity.ok(produtos.toString());
+            return ResponseEntity.ok(new ResponsePayload(HttpStatus.OK.toString(), produtos));
         } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsePayload(ex.getMessage()));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable int id) {
+    public ResponseEntity<ResponsePayload> deleteById(@PathVariable int id) {
         try {
             Produto produto = produtoService.getById(id);
             produtoService.deleteById(id);
             LOGGER.info(produto.toString());
-            return ResponseEntity.ok(produto.toString());
+            return ResponseEntity.ok(new ResponsePayload(HttpStatus.OK.toString(), List.of(produto)));
         } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsePayload(ex.getMessage()));
         }
     }
 
     @PostMapping()
-    public ResponseEntity<String> add(@RequestBody Produto produto) {
+    public ResponseEntity<ResponsePayload> add(@RequestBody Produto produto) {
         try {
             produtoService.add(produto);
             LOGGER.info(produto.toString());
-            return ResponseEntity.ok(produtoService.getAll().toString());
+            return ResponseEntity.ok(new ResponsePayload(HttpStatus.ACCEPTED.toString(), produtoService.getAll()));
         } catch (ProdutoConflictException ex) {
             LOGGER.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponsePayload(ex.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable int id, @RequestBody Produto produto) {
+    public ResponseEntity<ResponsePayload> update(@PathVariable int id, @RequestBody Produto produto) {
         try {
             Produto produtoAtualizado = produtoService.update(id, produto);
             LOGGER.info(produtoAtualizado.toString());
-            return ResponseEntity.ok(produtoAtualizado.toString());
+            return ResponseEntity.ok(new ResponsePayload(HttpStatus.ACCEPTED.toString(), List.of(produtoAtualizado)));
         } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsePayload(ex.getMessage()));
         }
     }
 }
