@@ -1,5 +1,6 @@
 package br.com.infnet.at.controller;
 
+import br.com.infnet.at.exception.CurrencyConversionException;
 import br.com.infnet.at.exception.ProdutoConflictException;
 import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Produto;
@@ -44,6 +45,8 @@ public class ProdutoController {
         } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsePayload(ex.getMessage()));
+        } catch (CurrencyConversionException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponsePayload(ex.getMessage()));
         }
     }
 

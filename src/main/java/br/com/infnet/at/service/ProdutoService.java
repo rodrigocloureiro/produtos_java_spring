@@ -1,5 +1,6 @@
 package br.com.infnet.at.service;
 
+import br.com.infnet.at.exception.CurrencyConversionException;
 import br.com.infnet.at.exception.ProdutoConflictException;
 import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Cotacao;
@@ -134,7 +135,7 @@ public class ProdutoService {
         LOGGER.info("Status Code: " + response.statusCode());
 
         if (response.statusCode() >= 400 && response.statusCode() < 500)
-            throw new RuntimeException("Erro ao efetuar requisição!");
+            throw new CurrencyConversionException("Erro ao efetuar requisição!");
 
         ObjectMapper objectMapper = JsonMapper.builder().build();
         CotacaoPayload cotacaoPayload = objectMapper.readValue(response.body(), CotacaoPayload.class);
