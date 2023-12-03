@@ -1,7 +1,7 @@
 package br.com.infnet.at.controller;
 
-import br.com.infnet.at.exception.ProdutoConflict;
-import br.com.infnet.at.exception.ProdutoNotFound;
+import br.com.infnet.at.exception.ProdutoConflictException;
+import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Produto;
 import br.com.infnet.at.service.ProdutoService;
 import org.slf4j.Logger;
@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -28,7 +26,7 @@ public class ProdutoController {
             Produto produto = produtoService.getById(id);
             LOGGER.info(produto.toString());
             return ResponseEntity.ok(produto.toString());
-        } catch (ProdutoNotFound ex) {
+        } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -42,7 +40,7 @@ public class ProdutoController {
             List<Produto> produtos = produtoService.getAll(preco, tamanho, moeda);
             LOGGER.info(produtos.toString());
             return ResponseEntity.ok(produtos.toString());
-        } catch (ProdutoNotFound ex) {
+        } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -55,7 +53,7 @@ public class ProdutoController {
             produtoService.deleteById(id);
             LOGGER.info(produto.toString());
             return ResponseEntity.ok(produto.toString());
-        } catch (ProdutoNotFound ex) {
+        } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -67,7 +65,7 @@ public class ProdutoController {
             produtoService.add(produto);
             LOGGER.info(produto.toString());
             return ResponseEntity.ok(produtoService.getAll().toString());
-        } catch (ProdutoConflict ex) {
+        } catch (ProdutoConflictException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         }
@@ -79,7 +77,7 @@ public class ProdutoController {
             Produto produtoAtualizado = produtoService.update(id, produto);
             LOGGER.info(produtoAtualizado.toString());
             return ResponseEntity.ok(produtoAtualizado.toString());
-        } catch (ProdutoNotFound ex) {
+        } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }

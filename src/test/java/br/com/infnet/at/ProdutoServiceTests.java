@@ -1,6 +1,6 @@
 package br.com.infnet.at;
 
-import br.com.infnet.at.exception.ProdutoNotFound;
+import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Produto;
 import br.com.infnet.at.service.ProdutoService;
 import org.junit.jupiter.api.*;
@@ -69,7 +69,7 @@ public class ProdutoServiceTests {
     @Test
     @DisplayName("Deve retornar uma exceção ao tentar deletar um produto não existente")
     public void testDeleteByIdError() {
-        assertThrows(ProdutoNotFound.class, () -> {
+        assertThrows(ProdutoNotFoundException.class, () -> {
             produtoService.deleteById(10);
         });
     }

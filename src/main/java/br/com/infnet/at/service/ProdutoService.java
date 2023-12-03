@@ -1,7 +1,7 @@
 package br.com.infnet.at.service;
 
-import br.com.infnet.at.exception.ProdutoConflict;
-import br.com.infnet.at.exception.ProdutoNotFound;
+import br.com.infnet.at.exception.ProdutoConflictException;
+import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Cotacao;
 import br.com.infnet.at.model.PayloadCotacao;
 import br.com.infnet.at.model.Produto;
@@ -60,7 +60,7 @@ public class ProdutoService {
 
     public Produto getById(int id) {
         Produto produto = produtos.get(id);
-        if (produto == null) throw new ProdutoNotFound("Produto não encontrado!");
+        if (produto == null) throw new ProdutoNotFoundException("Produto não encontrado!");
         return produto;
     }
 
@@ -76,13 +76,13 @@ public class ProdutoService {
     }
 
     public List<Produto> getAll() {
-        if (produtos.isEmpty()) throw new ProdutoNotFound("Produto não encontrado!");
+        if (produtos.isEmpty()) throw new ProdutoNotFoundException("Produto não encontrado!");
         return produtos.values().stream().toList();
     }
 
     public void deleteById(int id) {
         Produto produto = getById(id);
-        if (produto == null) throw new ProdutoNotFound("Produto não encontrado!");
+        if (produto == null) throw new ProdutoNotFoundException("Produto não encontrado!");
         produtos.remove(id);
     }
 
@@ -91,10 +91,10 @@ public class ProdutoService {
             if (item.getNome().equals(produto.getNome())
                     && item.getPreco() == produto.getPreco()
                     && item.getTamanhos().equals(produto.getTamanhos())) {
-                throw new ProdutoConflict("Produto já existe na base de dados!");
+                throw new ProdutoConflictException("Produto já existe na base de dados!");
             }
         }*/
-        if (produtos.containsKey(produto.getId())) throw new ProdutoConflict("Produto já existe na base de dados!");
+        if (produtos.containsKey(produto.getId())) throw new ProdutoConflictException("Produto já existe na base de dados!");
         produto.setId(++this.lastId);
         produtos.put(produto.getId(), produto);
         return produtos.values().stream().toList();
@@ -102,7 +102,7 @@ public class ProdutoService {
 
     public Produto update(int id, Produto produtoAtualizado) {
         Produto produto = getById(id);
-        if (produto == null) throw new ProdutoNotFound("Produto não encontrado!");
+        if (produto == null) throw new ProdutoNotFoundException("Produto não encontrado!");
         produtoAtualizado.setId(id);
         produtos.replace(id, produtoAtualizado);
         return produtoAtualizado;
@@ -123,7 +123,7 @@ public class ProdutoService {
                     .toList();
         }
 
-        if (produtos.isEmpty()) throw new ProdutoNotFound("Produto não encontrado!");
+        if (produtos.isEmpty()) throw new ProdutoNotFoundException("Produto não encontrado!");
 
         return produtos;
     }
