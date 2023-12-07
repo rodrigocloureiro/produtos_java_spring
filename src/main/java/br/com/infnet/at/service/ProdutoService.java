@@ -21,10 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @Service
 public class ProdutoService {
@@ -65,10 +62,10 @@ public class ProdutoService {
         return produto;
     }
 
-    public List<Produto> getAll(Double preco, String tamanho, String moeda) {
+    public List<Produto> getAll(Optional<Double> preco, Optional<String> tamanho, Optional<String> moeda) {
         try {
-            if (preco != null && tamanho != null) return filter(preco, tamanho);
-            if (moeda != null) return currencyConversion(moeda);
+            if (preco.isPresent() || tamanho.isPresent()) return filter(preco, tamanho);
+            if (moeda.isPresent()) return currencyConversion(moeda.get());
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -95,7 +92,8 @@ public class ProdutoService {
                 throw new ProdutoConflictException("Produto já existe na base de dados!");
             }
         }*/
-        if (produtos.containsKey(produto.getId())) throw new ProdutoConflictException("Produto já existe na base de dados!");
+        if (produtos.containsKey(produto.getId()))
+            throw new ProdutoConflictException("Produto já existe na base de dados!");
         produto.setId(++this.lastId);
         produtos.put(produto.getId(), produto);
         return produtos.values().stream().toList();
@@ -109,18 +107,18 @@ public class ProdutoService {
         return produtoAtualizado;
     }
 
-    public List<Produto> filter(Double preco, String tamanho) {
+    public List<Produto> filter(Optional<Double> preco, Optional<String> tamanho) {
         List<Produto> produtos = getAll();
 
-        if (preco != null) {
+        if (preco.isPresent()) {
             produtos = produtos.stream()
-                    .filter(produto -> produto.getPreco() <= preco)
+                    .filter(produto -> produto.getPreco() <= preco.get())
                     .toList();
         }
 
-        if (tamanho != null) {
+        if (tamanho.isPresent()) {
             produtos = produtos.stream()
-                    .filter(produto -> produto.getTamanhos().contains(tamanho))
+                    .filter(produto -> produto.getTamanhos().contains(tamanho.get()))
                     .toList();
         }
 

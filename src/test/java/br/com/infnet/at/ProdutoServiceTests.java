@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,7 +56,7 @@ public class ProdutoServiceTests {
         produtoService.add(chinelo);
         LOGGER.info(chinelo.toString());
 
-        List<Produto> filtrado = produtoService.filter(60.0, "42");
+        List<Produto> filtrado = produtoService.filter(Optional.of(60.0), Optional.of("42"));
         LOGGER.info(filtrado.get(0).toString());
 
         assertEquals(chinelo.getId(), filtrado.get(0).getId());

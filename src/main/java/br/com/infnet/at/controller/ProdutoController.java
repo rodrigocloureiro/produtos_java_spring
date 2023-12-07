@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/produto")
@@ -35,9 +36,9 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponsePayload> getAll(@RequestParam(required = false) Double preco,
-                                                  @RequestParam(required = false) String tamanho,
-                                                  @RequestParam(required = false) String moeda) {
+    public ResponseEntity<ResponsePayload> getAll(@RequestParam(required = false) Optional<Double> preco,
+                                                  @RequestParam(required = false) Optional<String> tamanho,
+                                                  @RequestParam(required = false) Optional<String> moeda) {
         try {
             List<Produto> produtos = produtoService.getAll(preco, tamanho, moeda);
             LOGGER.info(produtos.toString());
