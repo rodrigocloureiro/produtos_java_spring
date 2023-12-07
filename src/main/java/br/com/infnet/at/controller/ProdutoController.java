@@ -68,7 +68,7 @@ public class ProdutoController {
         try {
             produtoService.add(produto);
             LOGGER.info(produto.toString());
-            return ResponseEntity.ok(new ResponsePayload(HttpStatus.ACCEPTED.toString(), produtoService.getAll()));
+            return ResponseEntity.ok(new ResponsePayload(HttpStatus.OK.toString(), produtoService.getAll()));
         } catch (ProdutoConflictException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ResponsePayload(ex.getMessage()));
@@ -80,7 +80,7 @@ public class ProdutoController {
         try {
             Produto produtoAtualizado = produtoService.update(id, produto);
             LOGGER.info(produtoAtualizado.toString());
-            return ResponseEntity.ok(new ResponsePayload(HttpStatus.ACCEPTED.toString(), List.of(produtoAtualizado)));
+            return ResponseEntity.ok(new ResponsePayload(HttpStatus.OK.toString(), List.of(produtoAtualizado)));
         } catch (ProdutoNotFoundException ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponsePayload(ex.getMessage()));
