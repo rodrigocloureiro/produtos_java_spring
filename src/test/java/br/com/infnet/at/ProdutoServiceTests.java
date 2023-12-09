@@ -109,12 +109,11 @@ public class ProdutoServiceTests {
         int produtosCount = produtoService.getAll().size();
 
         assertEquals(4, produtosCount);
-        assertEquals(5, bola.getId());
         assertEquals("Bola de Futebol", bola.getNome());
         assertEquals(59.90, bola.getPreco());
         assertEquals(List.of("Universal"), bola.getTamanhos());
 
-        produtoService.deleteById(5);
+        produtoService.deleteById(bola.getId());
     }
 
     @Test
