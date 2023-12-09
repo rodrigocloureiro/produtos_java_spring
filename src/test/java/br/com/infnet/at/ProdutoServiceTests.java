@@ -1,5 +1,6 @@
 package br.com.infnet.at;
 
+import br.com.infnet.at.exception.CurrencyConversionException;
 import br.com.infnet.at.exception.ProdutoNotFoundException;
 import br.com.infnet.at.model.Produto;
 import br.com.infnet.at.service.ProdutoService;
@@ -151,6 +152,13 @@ public class ProdutoServiceTests {
         } catch (URISyntaxException | IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    @Test
+    @DisplayName("Deve retornar uma exceção ao tentar converter para moeda inválida")
+    public void testCurrencyConversionError() {
+        assertThrows(CurrencyConversionException.class, () -> {
+            produtoService.currencyConversion("USDD");
+        });
     }
 }
